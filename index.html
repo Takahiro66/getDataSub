@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ドコモバイクシェアのデータを取得して保存</title>
+  </head>
+  <body>
+    <div id="downloadLinksContainer"></div>
+    <script>
+      let linkIndex = 1;
+
+      function createDownloadLink(data) {
+        let now = new Date();
+        let month = now.getMonth() + 1;
+        let date = now.getDate();
+        let hour = now.getHours();
+        let minute = now.getMinutes();
+
+        const filename = "docomo-bikeshare-data-" + linkIndex + ".json";
+        const jsonData = JSON.stringify(data);
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const downloadLinksContainer = document.getElementById(
+          "downloadLinksContainer"
+        );
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.textContent =
+          month + "月" + date + "日" + hour + "時" + minute + "分";
+        downloadLinksContainer.appendChild(downloadLink);
+
+        linkIndex++;
+      }
+
+      function fetchDataAndCreateDownloadLink() {
+        fetch(
+          "https://api-public.odpt.org/api/v4/gbfs/docomo-cycle-tokyo/station_status.json"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            createDownloadLink(data);
+          })
+          .catch((error) => console.error(error));
+      }
+
+      function startNextExecution() {
+        fetchDataAndCreateDownloadLink();
+        setTimeout(startNextExecution, 10000); // 10秒後に再実行
+      }
+
+      // 最初の実行をスタート
+      startNextExecution();
+    </script>
+  </body>
+</html>
