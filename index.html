@@ -16,7 +16,7 @@
         let hour = now.getHours();
         let minute = now.getMinutes();
 
-        const filename = month + "月" + date + "日" + hour + "時" + ".json";
+        const filename = month + "月" + date + "日" + hour + "時" + minute + "分" + ".json";
         const jsonData = JSON.stringify(data);
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
